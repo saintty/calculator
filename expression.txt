@@ -1,2 +1,2 @@
-test=4
-myVar=4
+test= 4 + prekol * (haha / 814.0134) ^ 3.0
+k = 8 + 3 * test / haha

@@ -2,6 +2,7 @@ class Token:
     variable = "Variable"
     number = "Operand"
     operation = "Operation"
+    unary_operation = "Unary Operand"
 
     def __init__(self, type, value):
         self.type = type

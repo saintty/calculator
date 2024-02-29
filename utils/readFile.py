@@ -4,7 +4,8 @@ from .token import Token
 
 VARIABLE_PATTERN = re.compile("^[A-Za-z][A-Za-z0-9]*$")
 OPERATION_PATTERN = re.compile("^[+\-*/^()]$")
-OPERATION_PRIORITY = {"+": 2, "-": 2, "(": 0, ")": 1, "*": 3, "/": 3, "^": 4}
+OPERATION_PRIORITY = {"+": 2, "-": 2,
+                      "(": 0, ")": 1, "*": 3, "/": 3, "^": 4, "-u": 5}
 
 
 def readFile(file_name):
@@ -82,6 +83,21 @@ def make_tokens(line):
             else:
                 raise Exception("Syntax error: '.' in incorrect position")
 
+        elif char == "-":
+            if i == 0 or re.match(OPERATION_PATTERN, line[i - 1]):
+                is_negative = True
+
+            else:
+                if (len(var_name)):
+                    tokens.append(Token(Token.variable, var_name))
+                    var_name = ""
+                elif (len(num)):
+                    tokens.append(Token(Token.number, float(num)))
+                    num = ""
+                tokens.append(Token(Token.operation, char))
+
+            i += 1
+
         elif re.match(OPERATION_PATTERN, char):
             if (len(var_name)):
                 tokens.append(Token(Token.variable, var_name))
@@ -90,6 +106,9 @@ def make_tokens(line):
                 tokens.append(Token(Token.number, float(num)))
                 num = ""
 
+            if is_negative:
+                is_negative = False
+                tokens.append(Token(Token.unary_operation, "-u"))
             tokens.append(Token(Token.operation, char))
             i += 1
         else:
@@ -100,6 +119,10 @@ def make_tokens(line):
 
     if len(num):
         tokens.append(Token(Token.number, float(num)))
+
+    if is_negative:
+        is_negative = False
+        tokens.append(Token(Token.unary_operation, "-u"))
 
     return tokens
 
@@ -162,6 +185,10 @@ def calculate(rpn, vars):
                     "Syntax error: try to access undefined variable {}".format(token.value))
             else:
                 stack.append(vars[token.value])
+        elif token.type == Token.unary_operation:
+            if token.value == "-u":
+                a = get_operands(stack, 1)[0]
+                stack.append(a * Token(Token.number, -1))
         else:
             if token.value == "+":
                 a, b = get_operands(stack, 2)
@@ -178,5 +205,4 @@ def calculate(rpn, vars):
             elif token.value == "^":
                 a, b = get_operands(stack, 2)
                 stack.append(b ** a)
-
     return stack[0]

@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from utils.readfile import readFile, make_tokens, make_rpn, calculate
+from utils.readFile import readFile, make_tokens, make_rpn, calculate
 from utils.token import Token
 
 

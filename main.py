@@ -1,8 +1,5 @@
-from utils.readfile import readFile
+from utils.readFile import readFile
 
-
-def main():
+if __name__ == '__main__':
     vars = readFile("expression.txt")
 
-
-main()

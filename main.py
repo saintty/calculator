@@ -2,7 +2,7 @@ from funcs.readFile.readFile import readFile
 
 
 def main():
-    readFile("expression.txt")
+    vars = readFile("expression.txt")
 
 
 main()

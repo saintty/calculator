@@ -6,13 +6,31 @@ OPERATION_PRIORITY = {"+": 2, "-": 2, "(": 0, ")": 1, "*": 3, "/": 3, "^": 4}
 
 
 class Token:
+    variable = "Variable"
+    number = "Operand"
+    operation = "Operation"
+
     def __init__(self, type, value):
         self.type = type
         self.value = value
 
     def __str__(self):
-        type = "Operand" if self.type == "operand" else "Operation"
-        return "({}: {})".format(type, self.value)
+        return "({}: {})".format(self.type, self.value)
+
+    def __add__(self, other_token):
+        return Token(Token.number, self.value + other_token.value)
+
+    def __sub__(self, other_token):
+        return Token(Token.number, self.value - other_token.value)
+
+    def __pow__(self, other_token):
+        return Token(Token.number, self.value ** other_token.value)
+
+    def __mul__(self, other_token):
+        return Token(Token.number, self.value * other_token.value)
+
+    def __truediv__(self, other_token):
+        return Token(Token.number, self.value / other_token.value)
 
 
 def readFile(file_name):
@@ -38,8 +56,9 @@ def handle_line(line, vars):
     assign_position = line.find("=")
 
     if assign_position == -1:
-        # TODO: final expression calculation
-        pass
+        result_token = calculate(
+            make_rpn(line.strip()), vars)
+        print(result_token)
     elif line.rfind("=") != assign_position:
         raise Exception(
             "Error in variable definition: >=2 '=' symbols")
@@ -49,8 +68,8 @@ def handle_line(line, vars):
             raise Exception(
                 "Error in variable definition: varName contains not allowed symbols")
 
-        vars[variable_name] = 0
-        ops = calculate(line[assign_position + 1:].strip(), vars)
+        vars[variable_name] = calculate(
+            make_rpn(line[assign_position + 1:].strip()), vars)
 
 
 def make_tokens(line):
@@ -88,33 +107,33 @@ def make_tokens(line):
 
         elif re.match(OPERATION_PATTERN, char):
             if (len(var_name)):
-                tokens.append(Token("operand", var_name))
+                tokens.append(Token(Token.variable, var_name))
                 var_name = ""
             elif (len(num)):
-                tokens.append(Token("operand", float(num)))
+                tokens.append(Token(Token.number, float(num)))
                 num = ""
 
-            tokens.append(Token("operation", char))
+            tokens.append(Token(Token.operation, char))
             i += 1
         else:
             raise Exception("Unknown symbol")
 
     if len(var_name):
-        tokens.append(Token("operand", var_name))
+        tokens.append(Token(Token.variable, var_name))
 
     if len(num):
-        tokens.append(Token("operand", float(num)))
+        tokens.append(Token(Token.number, float(num)))
 
     return tokens
 
 
-def calculate(line, vars):
+def make_rpn(line):
     tokens = make_tokens(line)
     stack = []
     result_expression = []
 
     for token in tokens:
-        if token.type == "operand":
+        if token.type == Token.number or token.type == Token.variable:
             result_expression.append(token)
         elif token.value == "(":
             stack.append(token)
@@ -142,3 +161,45 @@ def calculate(line, vars):
         result_expression.append(stack.pop(-1))
 
     return result_expression
+
+
+def get_operands(stack, n):
+    operands = []
+
+    try:
+        for i in range(n):
+            operands.append(stack.pop(-1))
+        return operands
+    except Exception:
+        raise Exception("RNP Error: can`t get required operands")
+
+
+def calculate(rpn, vars):
+    stack = []
+    for token in rpn:
+        if token.type == Token.number:
+            stack.append(token)
+        elif token.type == Token.variable:
+            if token.value not in vars:
+                raise Exception(
+                    "Syntax error: try to access undefined variable {}".format(token.value))
+            else:
+                stack.append(vars[token.value])
+        else:
+            if token.value == "+":
+                a, b = get_operands(stack, 2)
+                stack.append(a + b)
+            elif token.value == "-":
+                a, b = get_operands(stack, 2)
+                stack.append(b - a)
+            elif token.value == "*":
+                a, b = get_operands(stack, 2)
+                stack.append(a * b)
+            elif token.value == "/":
+                a, b = get_operands(stack, 2)
+                stack.append(b / a)
+            elif token.value == "^":
+                a, b = get_operands(stack, 2)
+                stack.append(b ** a)
+
+    return stack[0]

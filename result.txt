@@ -1,1 +1,0 @@
-Calculation result: 10.0

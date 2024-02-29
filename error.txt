@@ -1,1 +1,1 @@
-Syntax error: try to access undefined variable b
+Syntax error: try to access undefined variable c

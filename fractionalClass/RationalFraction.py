@@ -62,6 +62,3 @@ class RationalFraction:
         new_numerator = self.numerator * other.denominator
         new_denominator = self.denominator * other.numerator
         return RationalFraction._create_result(new_numerator, new_denominator)
-
-
-__all__ = ["RationalFraction"]

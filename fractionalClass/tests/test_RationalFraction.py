@@ -1,5 +1,5 @@
 import unittest
-from RationalFraction import RationalFraction
+from fractionalClass.RationalFraction import RationalFraction
 
 
 class TestRationalFraction(unittest.TestCase):

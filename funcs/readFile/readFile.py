@@ -44,7 +44,8 @@ def readFile(file_name):
         try:
             handle_line(line, vars)
         except Exception as e:
-            print(e)
+            error_file = open("error.txt", "w")
+            error_file.write(str(e))
             return None
 
     f.close()
@@ -58,7 +59,9 @@ def handle_line(line, vars):
     if assign_position == -1:
         result_token = calculate(
             make_rpn(line.strip()), vars)
-        print(result_token)
+        result_file = open("result.txt", "w")
+        result_file.write("Calculation result: {}".format(
+            str(result_token.value)))
     elif line.rfind("=") != assign_position:
         raise Exception(
             "Error in variable definition: >=2 '=' symbols")

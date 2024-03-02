@@ -69,7 +69,7 @@ class TestRationalFraction(unittest.TestCase):
         with self.assertRaises(ValueError):
             RationalFraction("-2") ** 0.5
         with self.assertRaises(ValueError):
-            f = RationalFraction("-2") ** -0.5
+            RationalFraction("-2") ** -0.5
         f = RationalFraction("2") ** 0.0
         self.assertAlmostEqual(f.numerator / f.denominator, 1, places=4)
 
@@ -80,7 +80,7 @@ class TestRationalFraction(unittest.TestCase):
         with self.assertRaises(ValueError):
             RationalFraction("-2") ** RationalFraction("0.5")
         with self.assertRaises(ValueError):
-            f = RationalFraction("-2") ** RationalFraction("-0.5")
+            RationalFraction("-2") ** RationalFraction("-0.5")
         f = RationalFraction("2") ** RationalFraction("0.0")
         self.assertAlmostEqual(f.numerator / f.denominator, 1, places=4)
 

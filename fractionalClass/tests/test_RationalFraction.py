@@ -52,6 +52,8 @@ class TestRationalFraction(unittest.TestCase):
         f3 = RationalFraction("3")
         result = f1 + f2 - f3 * f1 / f2
         self.assertEqual(str(result), "7/4")
+        result = f1 ** f3 + f2 - f3 * f1 / f2
+        self.assertEqual(str(result), "11/8")
 
     def test_power(self):
         self.assertEqual(str(RationalFraction("2") ** 3), "8/1")

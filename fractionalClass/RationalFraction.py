@@ -92,5 +92,8 @@ class RationalFraction:
         return RationalFraction(str(result))
 
     def _pow_fraction(self, power):
-        result = float(self.numerator) / float(self.denominator) ** float(power.numerator / power.denominator)
-        return RationalFraction(str(result))
+        new_power = power.numerator / power.denominator
+        if isinstance(new_power, int):
+            return self._pow_integer(new_power)
+        elif isinstance(new_power, float):
+            return self._pow_float(new_power)

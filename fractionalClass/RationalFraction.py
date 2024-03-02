@@ -1,5 +1,5 @@
 from math import gcd
-from math import pow, exp, log
+from math import pow
 
 class RationalFraction:
     __slots__ = ('numerator', 'denominator')

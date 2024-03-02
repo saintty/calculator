@@ -53,6 +53,35 @@ class TestRationalFraction(unittest.TestCase):
         result = f1 + f2 - f3 * f1 / f2
         self.assertEqual(str(result), "7/4")
 
+    def test_power(self):
+        self.assertEqual(str(RationalFraction("2") ** 3), "8/1")
+        self.assertEqual(str(RationalFraction("2") ** (-3)), "1/8")
+        self.assertEqual(str(RationalFraction("-2") ** 3), "-8/1")
+        self.assertEqual(str(RationalFraction("-2") ** (-3)), "-1/8")
+        self.assertEqual(str(RationalFraction("10") ** 0), "1/1")
+
+        f = RationalFraction("2") ** 0.5
+        self.assertAlmostEqual(f.numerator / f.denominator, 1.41421, places=4)
+        f = RationalFraction("2") ** -0.5
+        self.assertAlmostEqual(f.numerator / f.denominator, 0.7071, places=4)
+        with self.assertRaises(ValueError):
+            RationalFraction("-2") ** 0.5
+        with self.assertRaises(ValueError):
+            f = RationalFraction("-2") ** -0.5
+        f = RationalFraction("2") ** 0.0
+        self.assertAlmostEqual(f.numerator / f.denominator, 1, places=4)
+
+        f = RationalFraction("2") ** RationalFraction("0.5")
+        self.assertAlmostEqual(f.numerator / f.denominator, 1.41421, places=4)
+        f = RationalFraction("2") ** RationalFraction("-0.5")
+        self.assertAlmostEqual(f.numerator / f.denominator, 0.7071, places=4)
+        with self.assertRaises(ValueError):
+            RationalFraction("-2") ** RationalFraction("0.5")
+        with self.assertRaises(ValueError):
+            f = RationalFraction("-2") ** RationalFraction("-0.5")
+        f = RationalFraction("2") ** RationalFraction("0.0")
+        self.assertAlmostEqual(f.numerator / f.denominator, 1, places=4)
+
 
 if __name__ == '__main__':
     unittest.main()

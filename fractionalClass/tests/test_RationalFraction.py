@@ -21,36 +21,44 @@ class TestRationalFraction(unittest.TestCase):
         fraction2 = RationalFraction("2.71")
         result = fraction1 + fraction2
         self.assertEqual(str(result), "117/20")
+        self.assertEqual(str(3.14 + fraction2), "117/20")
 
     def test_subtract(self):
         fraction1 = RationalFraction("5.99")
         fraction2 = RationalFraction("10.24")
         result = fraction1 - fraction2
         self.assertEqual(str(result), "-17/4")
+        self.assertEqual(str(5.99 - fraction2), "-17/4")
 
     def test_multiply(self):
         fraction1 = RationalFraction("12.4567")
         fraction2 = RationalFraction("22")
         result = fraction1 * fraction2
         self.assertEqual(str(result), "1370237/5000")
+        self.assertEqual(str(12.4567 * fraction2), "1370237/5000")
 
     def test_divide(self):
         fraction1 = RationalFraction("20.5128")
         fraction2 = RationalFraction("3.6")
         result = fraction1 / fraction2
         self.assertEqual(str(result), "2849/500")
+        self.assertEqual(str(20.5128 / fraction2), "2849/500")
 
     def test_divide_by_zero(self):
         fraction1 = RationalFraction("3.14")
         fraction2 = RationalFraction("0")
         with self.assertRaises(ZeroDivisionError):
             fraction1 / fraction2
+        with self.assertRaises(ZeroDivisionError):
+            3.14 / fraction2
 
     def test_simple_expression(self):
         f1 = RationalFraction("0.5")
         f2 = RationalFraction("2")
         f3 = RationalFraction("3")
         result = f1 + f2 - f3 * f1 / f2
+        self.assertEqual(str(result), "7/4")
+        result = 0.5 + f2 - 3 * f1 / f2
         self.assertEqual(str(result), "7/4")
         result = f1 ** f3 + f2 - f3 * f1 / f2
         self.assertEqual(str(result), "11/8")

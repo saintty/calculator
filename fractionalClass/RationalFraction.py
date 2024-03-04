@@ -23,8 +23,13 @@ class RationalFraction:
 
     @staticmethod
     def _check_instance(other):
-        if not isinstance(other, RationalFraction):
-            raise ValueError("Operand must be a RationalFraction object")
+        if isinstance(other, int) or isinstance(other, float):
+            new_other = RationalFraction(str(other))
+            return new_other
+        elif isinstance(other, RationalFraction):
+            return other
+        else:
+            raise ValueError("Operand must be a int, float or RationalFraction object")
 
     @staticmethod
     def _create_result(numerator, denominator):
@@ -38,30 +43,42 @@ class RationalFraction:
         return f"{self.numerator}/{self.denominator}"
 
     def __add__(self, other):
-        RationalFraction._check_instance(other)
+        other = RationalFraction._check_instance(other)
         new_numerator = self.numerator * other.denominator + other.numerator * self.denominator
         new_denominator = self.denominator * other.denominator
         return RationalFraction._create_result(new_numerator, new_denominator)
 
+    __radd__ = __add__
+
     def __sub__(self, other):
-        RationalFraction._check_instance(other)
+        other = RationalFraction._check_instance(other)
         new_numerator = self.numerator * other.denominator - other.numerator * self.denominator
         new_denominator = self.denominator * other.denominator
         return RationalFraction._create_result(new_numerator, new_denominator)
 
+    def __rsub__(self, other):
+        other = RationalFraction._check_instance(other)
+        return other - self
+
     def __mul__(self, other):
-        RationalFraction._check_instance(other)
+        other = RationalFraction._check_instance(other)
         new_numerator = self.numerator * other.numerator
         new_denominator = self.denominator * other.denominator
         return RationalFraction._create_result(new_numerator, new_denominator)
 
+    __rmul__ = __mul__
+
     def __truediv__(self, other):
-        RationalFraction._check_instance(other)
+        other = RationalFraction._check_instance(other)
         if other.numerator == 0:
             raise ZeroDivisionError("Division by 0")
         new_numerator = self.numerator * other.denominator
         new_denominator = self.denominator * other.numerator
         return RationalFraction._create_result(new_numerator, new_denominator)
+
+    def __rtruediv__(self, other):
+        other = RationalFraction._check_instance(other)
+        return other / self
 
     def __pow__(self, power):
         if isinstance(power, int):

@@ -24,7 +24,7 @@ class TestPrime(unittest.TestCase):
         for i in range(len(expected)):
             self.assertEqual(tokens[i].type, expected[i].type)
 
-            if type(tokens[i].value) == RationalFraction and type(expected[i].value == RationalFraction):
+            if type(tokens[i].value) == RationalFraction and type(expected[i].value) == RationalFraction:
                 self.assertEqual(tokens[i].value.numerator, expected[i].value.numerator)
                 self.assertEqual(tokens[i].value.denominator, expected[i].value.denominator)
             else:
@@ -52,7 +52,7 @@ class TestPrime(unittest.TestCase):
         for i in range(len(rpn)):
             self.assertEqual(rpn[i].type, expected[i].type)
 
-            if type(rpn[i].value) == RationalFraction and type(expected[i].value == RationalFraction):
+            if type(rpn[i].value) == RationalFraction and type(expected[i].value) == RationalFraction:
                 self.assertEqual(rpn[i].value.numerator, expected[i].value.numerator)
                 self.assertEqual(rpn[i].value.denominator, expected[i].value.denominator)
             else:

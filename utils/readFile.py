@@ -1,7 +1,3 @@
-# Артем, комментарии блять пиши иногда
-# Не дай бог на большом проекте комментов не будет
-# Я ебал в этом всем копаться
-
 import re
 
 
@@ -196,7 +192,7 @@ def calculate(rpn, vars):
         elif token.type == Token.unary_operation:
             if token.value == "-u":
                 a = get_operands(stack, 1)[0]
-                stack.append(a * Token(Token.number, -1))
+                stack.append(a * Token(Token.number, RationalFraction("-1")))
         else:
             if token.value == "+":
                 a, b = get_operands(stack, 2)

@@ -180,6 +180,7 @@ def get_operands(stack, n):
 
 def calculate(rpn, vars):
     stack = []
+
     for token in rpn:
         if token.type == Token.number:
             stack.append(token)

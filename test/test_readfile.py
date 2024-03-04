@@ -25,17 +25,19 @@ class TestPrime(unittest.TestCase):
             self.assertEqual(tokens[i].type, expected[i].type)
 
             if type(tokens[i].value) == RationalFraction and type(expected[i].value) == RationalFraction:
-                self.assertEqual(tokens[i].value.numerator, expected[i].value.numerator)
-                self.assertEqual(tokens[i].value.denominator, expected[i].value.denominator)
+                self.assertEqual(tokens[i].value.numerator,
+                                 expected[i].value.numerator)
+                self.assertEqual(
+                    tokens[i].value.denominator, expected[i].value.denominator)
             else:
                 self.assertEqual(tokens[i].value, expected[i].value)
 
-
     def test_make_rpn(self):
-        line = "1 + 3 * (alpha - 8 / great)"
+        line = "-1 + 3 * (alpha - 8 / great)"
         tokens = make_tokens(line)
         expected = [
             Token(Token.number, RationalFraction("1")),
+            Token(Token.unary_operation, "-u"),
             Token(Token.number, RationalFraction("3")),
             Token(Token.variable, "alpha"),
             Token(Token.number, RationalFraction("8")),
@@ -53,8 +55,10 @@ class TestPrime(unittest.TestCase):
             self.assertEqual(rpn[i].type, expected[i].type)
 
             if type(rpn[i].value) == RationalFraction and type(expected[i].value) == RationalFraction:
-                self.assertEqual(rpn[i].value.numerator, expected[i].value.numerator)
-                self.assertEqual(rpn[i].value.denominator, expected[i].value.denominator)
+                self.assertEqual(rpn[i].value.numerator,
+                                 expected[i].value.numerator)
+                self.assertEqual(rpn[i].value.denominator,
+                                 expected[i].value.denominator)
             else:
                 self.assertEqual(rpn[i].value, expected[i].value)
 

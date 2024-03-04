@@ -1,6 +1,14 @@
+# Артем, комментарии блять пиши иногда
+# Не дай бог на большом проекте комментов не будет
+# Я ебал в этом всем копаться
+
 import re
 
+
 from .token import Token
+
+from fractionalClass.RationalFraction import RationalFraction
+
 
 VARIABLE_PATTERN = re.compile("^[A-Za-z][A-Za-z0-9]*$")
 OPERATION_PATTERN = re.compile("^[+\-*/^()]$")
@@ -92,7 +100,7 @@ def make_tokens(line):
                     tokens.append(Token(Token.variable, var_name))
                     var_name = ""
                 elif (len(num)):
-                    tokens.append(Token(Token.number, float(num)))
+                    tokens.append(Token(Token.number, RationalFraction(num)))
                     num = ""
                 tokens.append(Token(Token.operation, char))
 
@@ -103,7 +111,7 @@ def make_tokens(line):
                 tokens.append(Token(Token.variable, var_name))
                 var_name = ""
             elif (len(num)):
-                tokens.append(Token(Token.number, float(num)))
+                tokens.append(Token(Token.number, RationalFraction(num)))
                 num = ""
 
             if is_negative:
@@ -118,7 +126,7 @@ def make_tokens(line):
         tokens.append(Token(Token.variable, var_name))
 
     if len(num):
-        tokens.append(Token(Token.number, float(num)))
+        tokens.append(Token(Token.number, RationalFraction(num)))
 
     if is_negative:
         is_negative = False

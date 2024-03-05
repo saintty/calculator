@@ -23,13 +23,12 @@ class RationalFraction:
 
     @staticmethod
     def _check_instance(other):
-        if isinstance(other, int) or isinstance(other, float):
-            new_other = RationalFraction(str(other))
-            return new_other
-        elif isinstance(other, RationalFraction):
+
+        if isinstance(other, RationalFraction):
             return other
         else:
-            raise ValueError("Operand must be a int, float or RationalFraction object")
+            raise NotImplemented
+            # raise ValueError("Operand must be a int, float or RationalFraction object")
 
     @staticmethod
     def _create_result(numerator, denominator):
@@ -43,24 +42,34 @@ class RationalFraction:
         return f"{self.numerator}/{self.denominator}"
 
     def __add__(self, other):
+        if not(isinstance(other, RationalFraction)):
+            return NotImplemented
+
         other = RationalFraction._check_instance(other)
         new_numerator = self.numerator * other.denominator + other.numerator * self.denominator
         new_denominator = self.denominator * other.denominator
         return RationalFraction._create_result(new_numerator, new_denominator)
 
-    __radd__ = __add__
-
     def __sub__(self, other):
+        if not(isinstance(other, RationalFraction)):
+            return NotImplemented
+
         other = RationalFraction._check_instance(other)
         new_numerator = self.numerator * other.denominator - other.numerator * self.denominator
         new_denominator = self.denominator * other.denominator
         return RationalFraction._create_result(new_numerator, new_denominator)
 
     def __rsub__(self, other):
+        if not(isinstance(other, RationalFraction)):
+            return NotImplemented
+
         other = RationalFraction._check_instance(other)
         return other - self
 
     def __mul__(self, other):
+        if not(isinstance(other, RationalFraction)):
+            return NotImplemented
+
         other = RationalFraction._check_instance(other)
         new_numerator = self.numerator * other.numerator
         new_denominator = self.denominator * other.denominator
@@ -69,7 +78,9 @@ class RationalFraction:
     __rmul__ = __mul__
 
     def __truediv__(self, other):
-        other = RationalFraction._check_instance(other)
+        if not (isinstance(other, RationalFraction)):
+            return NotImplemented
+
         if other.numerator == 0:
             raise ZeroDivisionError("Division by 0")
         new_numerator = self.numerator * other.denominator
@@ -77,6 +88,9 @@ class RationalFraction:
         return RationalFraction._create_result(new_numerator, new_denominator)
 
     def __rtruediv__(self, other):
+        if not(isinstance(other, RationalFraction)):
+            return NotImplemented
+
         other = RationalFraction._check_instance(other)
         return other / self
 
@@ -114,3 +128,5 @@ class RationalFraction:
             return self._pow_integer(new_power)
         elif isinstance(new_power, float):
             return self._pow_float(new_power)
+
+

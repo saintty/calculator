@@ -12,3 +12,6 @@
 
 - variable definition
 - math operation: +, -, \*, /, ^
+
+## FIGMA 
+https://www.figma.com/file/cmUH30Y4Zhis0PUVC71bnT/Калькулятор?type=whiteboard&node-id=0-1&t=eBH8VO31vn6vHyvn-0

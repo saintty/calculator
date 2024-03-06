@@ -56,7 +56,7 @@ def handle_line(line, vars):
 
 
 def check_vector_syntax(is_inside_vector, current_char):
-    if is_inside_vector and not (current_char.isdigit() or current_char.isalpha() or current_char == "," or current_char == "}"):
+    if is_inside_vector and not (current_char.isdigit() or current_char.isalpha() or current_char == "}" or current_char == "," or current_char == "-"):
         raise Exception("Unknown symbol '{}' in vector definition".format(
             current_char))
 
@@ -99,7 +99,9 @@ def make_tokens(line):
                 raise Exception("Syntax error: '.' in incorrect position")
 
         elif char == "-":
-            if i == 0 or re.match(OPERATION_PATTERN, line[i - 1]):
+            if is_vector:
+                vector.append(Token(Token.unary_operation, "-u"))
+            elif i == 0 or re.match(OPERATION_PATTERN, line[i - 1]):
                 is_negative = True
 
             else:
@@ -161,6 +163,7 @@ def make_tokens(line):
             elif len(num):
                 vector.append(Token(Token.number, RationalFraction(num)))
                 num = ""
+
             i += 1
 
         else:
@@ -228,9 +231,17 @@ def get_operands(stack, n):
 
 def prepared_vector(vector, vars):
     result = []
+    is_negative = False
     for token in vector:
-        if token.type == Token.number:
-            result.append(token.value)
+        if (token.type == Token.unary_operation):
+            is_negative = True
+        elif token.type == Token.number:
+            if is_negative:
+                result.append(token.value * RationalFraction("-1"))
+            else:
+                result.append(token.value)
+
+            is_negative = False
         elif token.type == Token.variable:
             if not token.value in vars:
                 raise Exception(
@@ -240,7 +251,17 @@ def prepared_vector(vector, vars):
             if isinstance(variable_value, Vector):
                 raise Exception("Nested vector not supported")
 
-            result.append(variable_value)
+            if is_negative:
+                result.append(variable_value * RationalFraction("-1"))
+            else:
+                result.append(variable_value)
+
+            is_negative = False
+
+    if is_negative:
+        raise Exception(
+            "Can`t apply unary minus operation inside vector definition")
+
     return Vector(result)
 
 

@@ -1,7 +1,7 @@
 import unittest
 
 from fractionalClass.RationalFraction import RationalFraction
-from utils.token import Token
+from TokenClass.Token import Token
 
 
 class TestPrime(unittest.TestCase):

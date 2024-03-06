@@ -1,8 +1,7 @@
 import re
 
 
-from .token import Token
-
+from TokenClass.Token import Token
 from fractionalClass.RationalFraction import RationalFraction
 
 

@@ -69,10 +69,7 @@ class Vector:
             result = [other.list_objects[i] - self.list_objects[i] for i in range(len(self.list_objects))]
             return Vector(result)
         elif check_obj == "const":
-            try:
                 raise InvalidOperationError
-            except InvalidOperationError as e:
-                return e
 
     def __mul__(self, other):
         check_obj = Vector.check_instance(self.list_objects, other)

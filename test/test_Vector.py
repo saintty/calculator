@@ -34,8 +34,6 @@ class TestRationalFraction(unittest.TestCase):
         self.assertEqual(str(result), "-3/1 -3/1 -3/1")
         result = v2 - v1
         self.assertEqual(str(result), "3/1 3/1 3/1")
-        result = r1 - v1
-        self.assertEqual(str(result), "Invalid operation")
         result = v1 - r1
         self.assertEqual(str(result), "-5/1 -4/1 -3/1")
 

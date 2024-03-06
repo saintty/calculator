@@ -27,7 +27,6 @@ def readFile(file_name):
         except Exception as e:
             error_file = open("error.txt", "w")
             error_file.write("line {}:  ".format(line_number) + str(e))
-            return None
 
     f.close()
     return vars
@@ -49,14 +48,15 @@ def handle_line(line, vars):
         variable_name = line[:assign_position].strip()
         if not re.match(VARIABLE_PATTERN, variable_name):
             raise Exception(
-                "Error in variable definition: varName contains not allowed symbols")
+                "Error in variable definition: variable name contains not allowed symbols")
 
         vars[variable_name] = calculate(
             make_rpn(line[assign_position + 1:].strip()), vars).value
 
 
 def check_vector_syntax(is_inside_vector, current_char):
-    if is_inside_vector and not (current_char.isdigit() or current_char.isalpha() or current_char == "}" or current_char == "," or current_char == "-"):
+    symbol_pattern = re.compile("[A-Za-z0-9},-]")
+    if is_inside_vector and not symbol_pattern.match(current_char):
         raise Exception("Unknown symbol '{}' in vector definition".format(
             current_char))
 
@@ -103,7 +103,6 @@ def make_tokens(line):
                 vector.append(Token(Token.unary_operation, "-u"))
             elif i == 0 or re.match(OPERATION_PATTERN, line[i - 1]):
                 is_negative = True
-
             else:
                 if (len(var_name)):
                     tokens.append(Token(Token.variable, var_name))
@@ -124,15 +123,13 @@ def make_tokens(line):
                 num = ""
 
             if is_negative:
-                is_negative = False
                 tokens.append(Token(Token.unary_operation, "-u"))
+                is_negative = False
+
             tokens.append(Token(Token.operation, char))
             i += 1
 
         elif char == "{":
-            if is_vector:
-                raise Exception("Nested vector not supported")
-
             is_vector = True
             i += 1
 
@@ -200,7 +197,6 @@ def make_rpn(line):
                     break
 
                 result_expression.append(top)
-
         else:
             if len(stack) == 0 or OPERATION_PRIORITY[stack[-1].value] < OPERATION_PRIORITY[token.value]:
                 stack.append(token)
@@ -232,14 +228,13 @@ def get_operands(stack, n):
 def prepared_vector(vector, vars):
     result = []
     is_negative = False
+
     for token in vector:
         if (token.type == Token.unary_operation):
             is_negative = True
         elif token.type == Token.number:
-            if is_negative:
-                result.append(token.value * RationalFraction("-1"))
-            else:
-                result.append(token.value)
+            result.append(token.value * RationalFraction("-1")
+                          if is_negative else token.value)
 
             is_negative = False
         elif token.type == Token.variable:
@@ -251,10 +246,8 @@ def prepared_vector(vector, vars):
             if isinstance(variable_value, Vector):
                 raise Exception("Nested vector not supported")
 
-            if is_negative:
-                result.append(variable_value * RationalFraction("-1"))
-            else:
-                result.append(variable_value)
+            result.append(variable_value * RationalFraction("-1")
+                          if is_negative else variable_value)
 
             is_negative = False
 

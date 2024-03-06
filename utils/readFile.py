@@ -14,6 +14,8 @@ OPERATION_PRIORITY = {"+": 2, "-": 2,
 def readFile(file_name):
     f = open(file_name, "r")
     vars = dict()
+    line_number = 1
+
     while True:
         line = f.readline()
         if not line:
@@ -21,9 +23,10 @@ def readFile(file_name):
 
         try:
             handle_line(line, vars)
+            line_number += 1
         except Exception as e:
             error_file = open("error.txt", "w")
-            error_file.write(str(e))
+            error_file.write("line {}:  ".format(line_number) + str(e))
             return None
 
     f.close()

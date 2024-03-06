@@ -2,9 +2,9 @@ import unittest
 import os
 
 from fractionalClass.RationalFraction import RationalFraction
+from TokenClass.Token import Token
 
 from utils.readFile import readFile, make_tokens, make_rpn, calculate
-from utils.token import Token
 
 
 class TestPrime(unittest.TestCase):

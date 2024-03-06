@@ -68,6 +68,20 @@ class TestRationalFraction(unittest.TestCase):
         result = r1 / v1
         self.assertEqual(str(result), "Invalid operation")
 
+    def test_simple_expression(self):
+        v1 = Vector([RationalFraction(0), RationalFraction(1), RationalFraction(2)])
+        v2 = Vector([RationalFraction(2), RationalFraction(3), RationalFraction(4)])
+        v3 = Vector([RationalFraction(5), RationalFraction(6), RationalFraction(7)])
+        v4 = Vector([RationalFraction(1), RationalFraction(3)])
+        v5 = Vector([RationalFraction(2), RationalFraction(6)])
+        r1 = RationalFraction(str(5))
+        self.assertEqual(str(v1 + v2 + v3), "7/1 10/1 13/1")
+        self.assertEqual(str(v3 - v2 - v1), "3/1 2/1 1/1")
+        self.assertEqual(str(v1 + v3 - v2), "3/1 4/1 5/1")
+        self.assertEqual(str(v1 * v2 * r1), "55/1")
+        self.assertEqual(str(r1 * v2 * v1), "55/1")
+        self.assertEqual(str(v5 / v4 * r1), "10/1")
+
 
 if __name__ == '__main__':
     unittest.main()

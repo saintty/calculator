@@ -8,6 +8,8 @@ class Vector:
         self.list_objects = list_objects
 
     def __str__(self):
+        if isinstance(self.list_objects, RationalFraction):
+            return str(self.list_objects)
         return " ".join([obj.__str__() for obj in self.list_objects])
 
     def __len__(self):
@@ -22,14 +24,16 @@ class Vector:
 
             for obj in other.list_objects:
                 if not (isinstance(obj, RationalFraction)):
-                    raise ValueError("One of the objects is not a RationFraction class.")
+                    raise ValueError(
+                        "One of the objects is not a RationFraction class.")
             return "vector"
 
         elif isinstance(other, RationalFraction):
             return "const"
 
         else:
-            raise ValueError("The operand must be a list of RationalFraction objects or a RationalFraction object.")
+            raise ValueError(
+                "The operand must be a list of RationalFraction objects or a RationalFraction object.")
 
     @staticmethod
     def create_result(result):
@@ -43,10 +47,10 @@ class Vector:
         check_obj = Vector.check_instance(self.list_objects, other)
         if check_obj == "vector":
             result = [self.list_objects[i] + other.list_objects[i] for i in range(len(self.list_objects))]
-            return self.create_result(result)
+            return Vector(result)
         elif check_obj == "const":
             result = [self.list_objects[i] + other for i in range(len(self.list_objects))]
-            return self.create_result(result)
+            return Vector(result)
 
     __radd__ = __add__
 
@@ -54,16 +58,16 @@ class Vector:
         check_obj = Vector.check_instance(self.list_objects, other)
         if check_obj == "vector":
             result = [self.list_objects[i] - other.list_objects[i] for i in range(len(self.list_objects))]
-            return self.create_result(result)
+            return Vector(result)
         elif check_obj == "const":
             result = [self.list_objects[i] - other for i in range(len(self.list_objects))]
-            return self.create_result(result)
+            return Vector(result)
 
     def __rsub__(self, other):
         check_obj = Vector.check_instance(self.list_objects, other)
         if check_obj == "vector":
             result = [other.list_objects[i] - self.list_objects[i] for i in range(len(self.list_objects))]
-            return self.create_result(result)
+            return Vector(result)
         elif check_obj == "const":
             try:
                 raise InvalidOperationError
@@ -73,14 +77,15 @@ class Vector:
     def __mul__(self, other):
         check_obj = Vector.check_instance(self.list_objects, other)
         if check_obj == "vector":
-            list_mul = [self.list_objects[i] * other.list_objects[i] for i in range(len(self.list_objects))]
+            list_mul = [self.list_objects[i] * other.list_objects[i]
+                        for i in range(len(self.list_objects))]
             result = RationalFraction("0")
             for obj in list_mul:
                 result = result + obj
-            return self.create_result(result)
+            return result
         elif check_obj == "const":
             result = [self.list_objects[i] * other for i in range(len(self.list_objects))]
-            return self.create_result(result)
+            return Vector(result)
 
     __rmul__ = __mul__
 
@@ -88,33 +93,23 @@ class Vector:
         check_obj = Vector.check_instance(self.list_objects, other)
         if check_obj == "vector":
             list_mul = [self.list_objects[i] / other.list_objects[i] for i in range(len(self.list_objects))]
-            result = list_mul[0].__str__()
+            result_str = list_mul[0].__str__()
             for obj in list_mul:
-                if result != obj.__str__():
-                    try:
-                        raise InvalidOperationError
-                    except InvalidOperationError as e:
-                        return e
-            return result
+                if result_str != obj.__str__():
+                    raise InvalidOperationError
+            return list_mul[0]
         elif check_obj == "const":
             result = [self.list_objects[i] / other for i in range(len(self.list_objects))]
-            return self.create_result(result)
+            return Vector(result)
 
     def __rtruediv__(self, other):
         check_obj = Vector.check_instance(self.list_objects, other)
         if check_obj == "vector":
             list_mul = [other.list_objects[i] / self.list_objects[i] for i in range(len(self.list_objects))]
-            result = list_mul[0].__str__()
+            result_str = list_mul[0].__str__()
             for obj in list_mul:
-                if result != obj.__str__():
-                    try:
-                        raise InvalidOperationError
-                    except InvalidOperationError as e:
-                        return e
-            return result
+                if result_str != obj.__str__():
+                    raise InvalidOperationError
+            return list_mul[0]
         elif check_obj == "const":
-            try:
-                raise InvalidOperationError
-            except InvalidOperationError as e:
-                return e
-
+            raise InvalidOperationError

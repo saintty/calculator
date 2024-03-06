@@ -1,10 +1,9 @@
 import re
 
 
-from .token import Token
-
+from TokenClass.Token import Token
 from fractionalClass.RationalFraction import RationalFraction
-
+from VectorClass.Vector import Vector
 
 VARIABLE_PATTERN = re.compile("^[A-Za-z][A-Za-z0-9]*$")
 OPERATION_PATTERN = re.compile("^[+\-*/^()]$")
@@ -15,6 +14,8 @@ OPERATION_PRIORITY = {"+": 2, "-": 2,
 def readFile(file_name):
     f = open(file_name, "r")
     vars = dict()
+    line_number = 1
+
     while True:
         line = f.readline()
         if not line:
@@ -22,13 +23,12 @@ def readFile(file_name):
 
         try:
             handle_line(line, vars)
+            line_number += 1
         except Exception as e:
             error_file = open("error.txt", "w")
-            error_file.write(str(e))
-            return None
+            error_file.write("line {}:  ".format(line_number) + str(e))
 
     f.close()
-
     return vars
 
 
@@ -36,11 +36,11 @@ def handle_line(line, vars):
     assign_position = line.find("=")
 
     if assign_position == -1:
-        result_token = calculate(
+        result = calculate(
             make_rpn(line.strip()), vars)
         result_file = open("result.txt", "w")
         result_file.write("Calculation result: {}".format(
-            str(result_token.value)))
+            str(result)))
     elif line.rfind("=") != assign_position:
         raise Exception(
             "Error in variable definition: >=2 '=' symbols")
@@ -48,16 +48,25 @@ def handle_line(line, vars):
         variable_name = line[:assign_position].strip()
         if not re.match(VARIABLE_PATTERN, variable_name):
             raise Exception(
-                "Error in variable definition: varName contains not allowed symbols")
+                "Error in variable definition: variable name contains not allowed symbols")
 
         vars[variable_name] = calculate(
-            make_rpn(line[assign_position + 1:].strip()), vars)
+            make_rpn(line[assign_position + 1:].strip()), vars).value
+
+
+def check_vector_syntax(is_inside_vector, current_char):
+    symbol_pattern = re.compile("[A-Za-z0-9},-]")
+    if is_inside_vector and not symbol_pattern.match(current_char):
+        raise Exception("Unknown symbol '{}' in vector definition".format(
+            current_char))
 
 
 def make_tokens(line):
     num = ""
     var_name = ""
     is_negative = False
+    is_vector = False
+    vector = []
 
     tokens = []
 
@@ -67,6 +76,8 @@ def make_tokens(line):
 
     while i < l:
         char = line[i]
+
+        check_vector_syntax(is_inside_vector=is_vector, current_char=char)
 
         if char.isalpha():
             var_name += char
@@ -88,9 +99,10 @@ def make_tokens(line):
                 raise Exception("Syntax error: '.' in incorrect position")
 
         elif char == "-":
-            if i == 0 or re.match(OPERATION_PATTERN, line[i - 1]):
+            if is_vector:
+                vector.append(Token(Token.unary_operation, "-u"))
+            elif i == 0 or re.match(OPERATION_PATTERN, line[i - 1]):
                 is_negative = True
-
             else:
                 if (len(var_name)):
                     tokens.append(Token(Token.variable, var_name))
@@ -111,10 +123,46 @@ def make_tokens(line):
                 num = ""
 
             if is_negative:
-                is_negative = False
                 tokens.append(Token(Token.unary_operation, "-u"))
+                is_negative = False
+
             tokens.append(Token(Token.operation, char))
             i += 1
+
+        elif char == "{":
+            is_vector = True
+            i += 1
+
+        elif char == "}":
+            if not is_vector:
+                raise Exception("Incorrect vector syntax - } symbol before {")
+
+            if (len(var_name)):
+                vector.append(Token(Token.variable, var_name))
+                var_name = ""
+            elif len(num):
+                vector.append(Token(Token.number, RationalFraction(num)))
+                num = ""
+
+            tokens.append(Token(Token.vector, vector))
+            is_vector = False
+            vector = []
+            i += 1
+
+        elif char == ",":
+            if not is_vector:
+                raise Exception(
+                    "Unknown symbol '{}' in vector definition".format(char))
+
+            if (len(var_name)):
+                vector.append(Token(Token.variable, var_name))
+                var_name = ""
+            elif len(num):
+                vector.append(Token(Token.number, RationalFraction(num)))
+                num = ""
+
+            i += 1
+
         else:
             raise Exception("Unknown symbol")
 
@@ -137,7 +185,7 @@ def make_rpn(line):
     result_expression = []
 
     for token in tokens:
-        if token.type == Token.number or token.type == Token.variable:
+        if token.type == Token.number or token.type == Token.variable or token.type == Token.vector:
             result_expression.append(token)
         elif token.value == "(":
             stack.append(token)
@@ -149,7 +197,6 @@ def make_rpn(line):
                     break
 
                 result_expression.append(top)
-
         else:
             if len(stack) == 0 or OPERATION_PRIORITY[stack[-1].value] < OPERATION_PRIORITY[token.value]:
                 stack.append(token)
@@ -178,12 +225,47 @@ def get_operands(stack, n):
         raise Exception("RNP Error: can`t get required operands")
 
 
+def prepared_vector(vector, vars):
+    result = []
+    is_negative = False
+
+    for token in vector:
+        if (token.type == Token.unary_operation):
+            is_negative = True
+        elif token.type == Token.number:
+            result.append(token.value * RationalFraction("-1")
+                          if is_negative else token.value)
+
+            is_negative = False
+        elif token.type == Token.variable:
+            if not token.value in vars:
+                raise Exception(
+                    "Syntax error: try to access undefined variable {} inside vector".format(token.value))
+
+            variable_value = vars[token.value]
+            if isinstance(variable_value, Vector):
+                raise Exception("Nested vector not supported")
+
+            result.append(variable_value * RationalFraction("-1")
+                          if is_negative else variable_value)
+
+            is_negative = False
+
+    if is_negative:
+        raise Exception(
+            "Can`t apply unary minus operation inside vector definition")
+
+    return Vector(result)
+
+
 def calculate(rpn, vars):
     stack = []
-
     for token in rpn:
         if token.type == Token.number:
             stack.append(token)
+        elif token.type == Token.vector:
+            stack.append(
+                Token(Token.vector, prepared_vector(token.value, vars)))
         elif token.type == Token.variable:
             if token.value not in vars:
                 raise Exception(

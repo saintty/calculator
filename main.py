@@ -1,6 +1,6 @@
-from utils.readFile import readFile
-
 import argparse
+
+from utils.readFile import readFile
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

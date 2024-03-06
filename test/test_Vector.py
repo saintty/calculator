@@ -1,5 +1,6 @@
 import unittest
 
+from VectorClass.Error import InvalidOperationError
 from VectorClass.Vector import Vector
 from fractionalClass.RationalFraction import RationalFraction
 
@@ -61,12 +62,12 @@ class TestRationalFraction(unittest.TestCase):
         self.assertEqual(str(result), "2/1")
         result = v2 / v1
         self.assertEqual(str(result), "1/2")
-        result = v3 / v4
-        self.assertEqual(str(result), "Invalid operation")
+        with self.assertRaises(InvalidOperationError):
+            v3 / v4
         result = v1 / r1
         self.assertEqual(str(result), "2/5 6/5 2/1")
-        result = r1 / v1
-        self.assertEqual(str(result), "Invalid operation")
+        with self.assertRaises(InvalidOperationError):
+            r1 / v1
 
     def test_simple_expression(self):
         v1 = Vector([RationalFraction(0), RationalFraction(1), RationalFraction(2)])

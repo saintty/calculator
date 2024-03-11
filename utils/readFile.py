@@ -37,7 +37,7 @@ def handle_line(line, vars):
 
     if assign_position == -1:
         result = calculate(
-            make_rpn(line.strip()), vars)
+            make_rpn(line.strip()), vars).value
         result_file = open("result.txt", "w")
         result_file.write("Calculation result: {}".format(
             str(result)))
@@ -55,7 +55,7 @@ def handle_line(line, vars):
 
 
 def check_vector_syntax(is_inside_vector, current_char):
-    symbol_pattern = re.compile("[A-Za-z0-9},-]")
+    symbol_pattern = re.compile("[A-Za-z0-9}\.,-]")
     if is_inside_vector and not symbol_pattern.match(current_char):
         raise Exception("Unknown symbol '{}' in vector definition".format(
             current_char))
@@ -260,6 +260,7 @@ def prepared_vector(vector, vars):
 
 def calculate(rpn, vars):
     stack = []
+
     for token in rpn:
         if token.type == Token.number:
             stack.append(token)
@@ -271,7 +272,8 @@ def calculate(rpn, vars):
                 raise Exception(
                     "Syntax error: try to access undefined variable {}".format(token.value))
             else:
-                stack.append(vars[token.value])
+                stack.append(Token(Token.number if isinstance(
+                    vars[token.value], RationalFraction) else Token.vector, vars[token.value]))
         elif token.type == Token.unary_operation:
             if token.value == "-u":
                 a = get_operands(stack, 1)[0]
@@ -292,4 +294,5 @@ def calculate(rpn, vars):
             elif token.value == "^":
                 a, b = get_operands(stack, 2)
                 stack.append(b ** a)
+
     return stack[0]

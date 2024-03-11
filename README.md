@@ -49,7 +49,7 @@ Were used [Figma](https://www.figma.com/file/cmUH30Y4Zhis0PUVC71bnT/Кальку
 
 All operations are allowed to use with variables names instead of numbers/vectors literals
 
-## Input files
+## Output files
 
 - `result.txt` display calculation result of last line in expression.txt file. Last line mustn't include = symbol
 - `error.txt` display first error occurred during work
